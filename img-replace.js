@@ -12,11 +12,11 @@ const mutationObserverInitOptions = {
   };
 
 
-  /**
-   * 
-   * 
-   * Inspired by https://github.com/digidem/img-observer
-   */
+/**
+ * 
+ * 
+ * Inspired by https://github.com/digidem/img-observer
+ */
 class ImageReplacementMonitor {
     constructor(replacements) {
         this.imageReplacements = new Map(replacements);
@@ -35,6 +35,13 @@ class ImageReplacementMonitor {
                 filterNodeList(mutation.addedNodes, tagName).forEach(processImageNode);
             }
         });
+        observer.observe(root, mutationObserverInitOptions);
+
+        var walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, (node) => node.nodeName.toUpperCase() === tagName ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT);
+        var node;
+        while (node = walker.nextNode()) {
+            processImageNode(node);
+        }
     }
 
     processImageNode(img) {
@@ -52,7 +59,7 @@ function filterNodeList(nodeList, tagName) {
       // Only check node nodes, not text or script nodes.
       if (nodeList[i].nodeType !== window.Node.ELEMENT_NODE) continue;
       // Check if the root node is what we are looking for
-      if (nodeList[i].tagName === tagName) {
+      if (nodeList[i].tagName.toUpperCase() === tagName) {
         matched.push(nodeList[i]);
         // If the node has no children, continue to next node
         if (!nodeList[i].children.length) continue;
